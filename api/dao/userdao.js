@@ -1,9 +1,9 @@
 // Gunakan singleton Prisma Client untuk menghindari error di Vercel
-const { prisma } = require('../prisma/client');
+const { prisma } = require('../../prisma/client');
 
 // Log untuk debugging koneksi di Vercel
 if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
-  console.log('API UserDAO: Menggunakan PrismaClient singleton');
+  console.log('UserDAO: Menggunakan PrismaClient singleton');
 }
 
 const userDao = {
@@ -26,31 +26,35 @@ const userDao = {
     });
   },
   checkUsernameExists: async (uname) => {
-    return await prisma.user.findUnique({ where: { uname } });
+    const user = await prisma.user.findUnique({ where: { uname } });
+    return !!user; // Mengembalikan boolean true jika user ditemukan, false jika tidak
   },
 
   checkEmailExists: async (email) => {
-    return await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email } });
+    return !!user; // Mengembalikan boolean true jika user ditemukan, false jika tidak
   },
 
   // Cek username ada kecuali user dengan ID tertentu (untuk update)
   checkUsernameExistsExcept: async (uname, userId) => {
-    return await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
         uname,
         uid: { not: userId }
       }
     });
+    return !!user; // Mengembalikan boolean true jika user ditemukan, false jika tidak
   },
 
   // Cek email ada kecuali user dengan ID tertentu (untuk update)
   checkEmailExistsExcept: async (email, userId) => {
-    return await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
         email,
         uid: { not: userId }
       }
     });
+    return !!user; // Mengembalikan boolean true jika user ditemukan, false jika tidak
   },
 
   createUser: async ({ uname, password, email, ppict }) => {
